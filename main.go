@@ -24,12 +24,17 @@ func main() {
 	}
 
 	// Initialize dependencies
+	// Repositories
 	userRepo := repository.NewUserRepository(redisClient)
-	userSvc := service.NewUserService(userRepo)
-	userController := controller.NewUserController(userSvc)
-
 	songRepo := repository.NewSongRepository(redisClient)
-	songSvc := service.NewSongService(songRepo)
+	vecRepo := repository.NewVectorRepository(redisClient)
+
+	// Services (inject songRepo into userSvc for embedding recompute)
+	userSvc := service.NewUserService(userRepo, vecRepo)
+	songSvc := service.NewSongService(songRepo, vecRepo)
+
+	// Controllers
+	userController := controller.NewUserController(userSvc)
 	songController := controller.NewSongController(songSvc)
 
 	// Initialize HTTP transport

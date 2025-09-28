@@ -6,6 +6,7 @@ import (
 	"music-store/internal/model"
 	"music-store/internal/service"
 	net_http "net/http"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/unbxd/go-base/kit/endpoint"
@@ -75,6 +76,19 @@ func MakeDeleteSongEndpoint(s service.SongService) endpoint.Endpoint {
 	}
 }
 
+func MakeSimilarSongsEndpoint(s service.SongService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(model.SimilarSongsRequest)
+		if !ok {
+			return nil, errors.Wrap(
+				errBadRequest, "failed to cast object to SimilarSongsRequest",
+			)
+		}
+		songs, err := s.SimilarSongs(ctx, req.Name, req.Count)
+		return model.SimilarSongsResponse{Songs: songs, Err: err}, nil
+	}
+}
+
 func CreateSongHandler(service service.SongService) http.Handler {
 	return http.Handler(MakeCreateSongEndpoint(service))
 }
@@ -93,6 +107,10 @@ func UpdateSongHandler(service service.SongService) http.Handler {
 
 func DeleteSongHandler(service service.SongService) http.Handler {
 	return http.Handler(MakeDeleteSongEndpoint(service))
+}
+
+func SimilarSongsHandler(service service.SongService) http.Handler {
+	return http.Handler(MakeSimilarSongsEndpoint(service))
 }
 
 func NewCreateSongHandlerOption(opts []http.HandlerOption) []http.HandlerOption {
@@ -135,6 +153,14 @@ func NewDeleteSongHandlerOption(opts []http.HandlerOption) []http.HandlerOption 
 	}, opts...)
 }
 
+func NewSimilarSongsHandlerOption(opts []http.HandlerOption) []http.HandlerOption {
+	return append([]http.HandlerOption{
+		http.HandlerWithDecoder(SimilarSongsDecoderFunc),
+		http.HandlerWithEncoder(SimilarSongsEncoderFunc),
+		http.HandlerWithErrorEncoder(errorEncoder),
+	}, opts...)
+}
+
 func CreateSongDecoderFunc(ctx context.Context, r *net_http.Request) (interface{}, error) {
 	var req model.CreateSongRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -171,6 +197,15 @@ func DeleteSongDecoderFunc(ctx context.Context, r *net_http.Request) (interface{
 	return model.DeleteSongRequest{Name: http.Parameters(r).ByName("name")}, nil
 }
 
+func SimilarSongsDecoderFunc(ctx context.Context, r *net_http.Request) (interface{}, error) {
+	countStr := http.Parameters(r).ByName("count")
+	count, err := strconv.Atoi(countStr)
+	if err != nil {
+		return nil, err
+	}
+	return model.SimilarSongsRequest{Name: http.Parameters(r).ByName("name"), Count: count}, nil
+}
+
 func CreateSongEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(response)
@@ -192,6 +227,11 @@ func UpdateSongEncoderFunc(ctx context.Context, w net_http.ResponseWriter, respo
 }
 
 func DeleteSongEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(response)
+}
+
+func SimilarSongsEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(response)
 }

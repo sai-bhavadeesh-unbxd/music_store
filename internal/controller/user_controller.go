@@ -63,4 +63,10 @@ func (c *UserController) Bind(tr *http.Transport, opts []http.HandlerOption) {
 		handler.GetLikedSongsHandler(c.userService),
 		handler.NewGetLikedSongsHandlerOption(opts)...,
 	)
+
+	tr.GET(
+		"/users/:id/recommended/:count",
+		handler.GetRecommendedSongsHandler(c.userService),
+		handler.NewGetRecommendedSongsHandlerOption(opts)...,
+	)
 }

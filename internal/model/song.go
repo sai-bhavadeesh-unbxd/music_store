@@ -3,7 +3,7 @@ package model
 type (
 	Song struct {
 		Name      string    `json:"name"`
-		Embedding []float64 `json:"embedding"`
+		Embedding []float32 `json:"embedding,omitempty"`
 	}
 
 	GetSongRequest struct {
@@ -26,7 +26,7 @@ type (
 	}
 
 	CreateSongRequest struct {
-		Song Song `json:"song"` // Make consistent with UpdateSongRequest
+		Song Song `json:"song"`
 	}
 
 	CreateSongResponse struct {
@@ -35,8 +35,8 @@ type (
 	}
 
 	UpdateSongRequest struct {
-		Name string `json:"name"` // Add Name field like User model has ID
-		Song Song   `json:"song"` // Make it non-pointer to avoid nil issues
+		Name string `json:"name"`
+		Song Song   `json:"song"`
 	}
 
 	UpdateSongResponse struct {
@@ -51,5 +51,15 @@ type (
 	DeleteSongResponse struct {
 		Msg string `json:"msg"`
 		Err error  `json:"error,omitempty"`
+	}
+
+	SimilarSongsRequest struct {
+		Name  string `json:"name"`
+		Count int    `json:"count"`
+	}
+
+	SimilarSongsResponse struct {
+		Songs []string `json:"songs"`
+		Err   error    `json:"error,omitempty"`
 	}
 )

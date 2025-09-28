@@ -6,6 +6,7 @@ import (
 	"music-store/internal/model"
 	"music-store/internal/service"
 	net_http "net/http"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/unbxd/go-base/kit/endpoint"
@@ -117,6 +118,20 @@ func MakeGetLikedSongsEndpoint(s service.UserService) endpoint.Endpoint {
 	}
 }
 
+func MakeGetRecommendedSongsEndpoint(s service.UserService) endpoint.Endpoint {
+
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(model.GetRecommendedSongsRequest)
+		if !ok {
+			return nil, errors.Wrap(
+				errBadRequest, "failed to cast object to GetRecommendedSongsRequest",
+			)
+		}
+		songs, err := s.GetRecommendedSongs(ctx, req.UserID, req.Count)
+		return model.GetRecommendedSongsResponse{Songs: songs, Err: err}, nil
+	}
+}
+
 func CreateUserHandler(service service.UserService) http.Handler {
 	return http.Handler(MakeCreateUserEndpoint(service))
 }
@@ -147,6 +162,10 @@ func UnlikeSongHandler(service service.UserService) http.Handler {
 
 func GetLikedSongsHandler(service service.UserService) http.Handler {
 	return http.Handler(MakeGetLikedSongsEndpoint(service))
+}
+
+func GetRecommendedSongsHandler(service service.UserService) http.Handler {
+	return http.Handler(MakeGetRecommendedSongsEndpoint(service))
 }
 
 func NewCreateUserHandlerOption(opts []http.HandlerOption) []http.HandlerOption {
@@ -193,6 +212,14 @@ func NewGetLikedSongsHandlerOption(opts []http.HandlerOption) []http.HandlerOpti
 	return append([]http.HandlerOption{
 		http.HandlerWithDecoder(GetLikedSongsDecoderFunc),
 		http.HandlerWithEncoder(GetLikedSongsEncoderFunc),
+		http.HandlerWithErrorEncoder(errorEncoder),
+	}, opts...)
+}
+
+func NewGetRecommendedSongsHandlerOption(opts []http.HandlerOption) []http.HandlerOption {
+	return append([]http.HandlerOption{
+		http.HandlerWithDecoder(GetRecommendedSongsDecoderFunc),
+		http.HandlerWithEncoder(GetRecommendedSongsEncoderFunc),
 		http.HandlerWithErrorEncoder(errorEncoder),
 	}, opts...)
 }
@@ -258,6 +285,15 @@ func GetLikedSongsDecoderFunc(ctx context.Context, r *net_http.Request) (interfa
 	return model.GetLikedSongsRequest{UserID: http.Parameters(r).ByName("id")}, nil
 }
 
+func GetRecommendedSongsDecoderFunc(ctx context.Context, r *net_http.Request) (interface{}, error) {
+	countStr := http.Parameters(r).ByName("count")
+	count, err := strconv.Atoi(countStr)
+	if err != nil {
+		return nil, err
+	}
+	return model.GetRecommendedSongsRequest{UserID: http.Parameters(r).ByName("id"), Count: count}, nil
+}
+
 // Encoder functions
 func CreateUserEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -290,6 +326,11 @@ func UnlikeSongEncoderFunc(ctx context.Context, w net_http.ResponseWriter, respo
 }
 
 func GetLikedSongsEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(response)
+}
+
+func GetRecommendedSongsEncoderFunc(ctx context.Context, w net_http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(response)
 }

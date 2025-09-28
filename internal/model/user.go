@@ -5,7 +5,7 @@ type (
 		ID         string    `json:"id"`
 		Name       string    `json:"name"`
 		LikedSongs []string  `json:"liked_songs,omitempty"`
-		Embedding  []float64 `json:"embedding,omitempty"`
+		Embedding  []float32 `json:"embedding,omitempty"`
 	}
 
 	GetUserRequest struct {
@@ -82,5 +82,15 @@ type (
 	GetLikedSongsResponse struct {
 		LikedSongs []string `json:"liked_songs,omitempty"`
 		Err        error    `json:"error,omitempty"`
+	}
+
+	GetRecommendedSongsRequest struct {
+		UserID string `json:"user_id"`
+		Count  int    `json:"count"`
+	}
+
+	GetRecommendedSongsResponse struct {
+		Songs []string `json:"songs,omitempty"`
+		Err   error    `json:"error,omitempty"`
 	}
 )

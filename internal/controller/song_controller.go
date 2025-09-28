@@ -44,4 +44,10 @@ func (c *SongController) Bind(tr *http.Transport, opts []http.HandlerOption) {
 		handler.DeleteSongHandler(c.songService),
 		handler.NewDeleteSongHandlerOption(opts)...,
 	)
+
+	tr.GET(
+		"/songs/similar/:name/:count",
+		handler.SimilarSongsHandler(c.songService),
+		handler.NewSimilarSongsHandlerOption(opts)...,
+	)
 }
