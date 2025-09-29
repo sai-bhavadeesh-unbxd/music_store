@@ -23,6 +23,8 @@ services:
       - MS_REDIS_CONN=redis:6379
       - MS_REDIS_PASSWORD=
       - MS_REDIS_DATABASE=0
+      - MS_HTTP_HOST=0.0.0.0
+      - MS_HTTP_PORT=8080
     depends_on:
       redis:
         condition: service_healthy

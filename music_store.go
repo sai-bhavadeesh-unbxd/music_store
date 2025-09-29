@@ -82,7 +82,20 @@ func getFunctionName(i interface{}) string {
 func NewMusicStore(options ...Option) (*MusicStore, error) {
 	utils.InitRedisWithDefaults()
 	var (
-		tr, _       = http.NewTransport("localhost", "8080")
+		// Bind HTTP transport using environment (defaults suitable for Docker)
+		httpHost = os.Getenv("MS_HTTP_HOST")
+		httpPort = os.Getenv("MS_HTTP_PORT")
+		tr, _    = http.NewTransport(func() string {
+			if httpHost == "" {
+				return "0.0.0.0"
+			}
+			return httpHost
+		}(), func() string {
+			if httpPort == "" {
+				return "8080"
+			}
+			return httpPort
+		}())
 		lg, _       = log.NewZapLogger()
 		redisClient = utils.GetRedisClient()
 		userRepo    = repository.NewUserRepository(redisClient)
