@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -23,16 +24,20 @@ type RedisConfig struct {
 
 // GetDefaultRedisConfig returns default Redis configuration
 func GetDefaultRedisConfig() *RedisConfig {
-	address := os.Getenv("REDIS_ADDR")
+	address := os.Getenv("MS_REDIS_CONN")
 	if address == "" {
 		address = "localhost:6379" // Default for local development
 	}
 
-	password := os.Getenv("REDIS_PASSWORD")
+	password := os.Getenv("MS_REDIS_PASSWORD")
+	database, err := strconv.Atoi(os.Getenv("MS_REDIS_DATABASE"))
+	if err != nil {
+		database = 0
+	}
 	return &RedisConfig{
 		Address:  address,
 		Password: password,
-		Database: 0, // Default database
+		Database: database,
 	}
 }
 

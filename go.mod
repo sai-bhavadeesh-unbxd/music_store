@@ -3,11 +3,13 @@ module music-store
 go 1.24.0
 
 require (
+	github.com/knights-analytics/hugot v0.5.4
 	github.com/redis/go-redis/v9 v9.14.0
 	github.com/unbxd/go-base v1.2.9
 )
 
 require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/daulet/tokenizers v1.22.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -20,14 +22,15 @@ require (
 	github.com/gomlx/gopjrt v0.8.0 // indirect
 	github.com/gomlx/onnx-gomlx v0.2.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/knights-analytics/hugot v0.5.4 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/progressbar/v2 v2.15.0 // indirect
 	github.com/sugarme/regexpset v0.0.0-20200920021344-4d4ec8eaf93c // indirect
 	github.com/sugarme/tokenizer v0.2.3-0.20250806005049-d78f65a68e82 // indirect
 	github.com/viant/afs v1.26.3 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
+	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	github.com/yalue/onnxruntime_go v1.21.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
@@ -60,6 +63,7 @@ require (
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/santhosh-tekuri/jsonschema v1.2.4 // indirect
+	github.com/urfave/cli/v2 v2.27.7
 	go.elastic.co/apm v1.15.0 // indirect
 	go.elastic.co/apm/module/apmhttp v1.15.0 // indirect
 	go.elastic.co/fastjson v1.1.0 // indirect

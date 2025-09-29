@@ -22,24 +22,24 @@ type HugotConfig struct {
 
 // GetDefaultHugotConfig returns sane defaults for local development.
 func GetDefaultHugotConfig() *HugotConfig {
-	model := os.Getenv("HUGOT_MODEL")
+	model := os.Getenv("MS_EMBEDDING_MODEL")
 	if model == "" {
 		model = "sentence-transformers/all-MiniLM-L6-v2"
 	}
-	dim := 512
-	if s := os.Getenv("HUGOT_DIM"); s != "" {
-		if v, err := strconv.Atoi(s); err == nil && v > 0 {
-			dim = v
-		}
+	dim, err := strconv.Atoi(os.Getenv("MS_EMBEDDING_DIM"))
+	if err != nil {
+		dim = 512
 	}
-	onnx := os.Getenv("HUGOT_ONNX_PATH")
+
+	onnx := os.Getenv("MS_EMBEDDING_MODEL_PATH")
 	if onnx == "" {
 		onnx = "onnx/model.onnx"
 	}
-	modelsDir := os.Getenv("HUGOT_MODELS_DIR")
+	modelsDir := os.Getenv("MS_EMBEDDING_MODELS_DIR")
 	if modelsDir == "" {
 		modelsDir = "./models/"
 	}
+
 	return &HugotConfig{ModelName: model, Dim: dim, OnnxPath: onnx, ModelsDir: modelsDir}
 }
 
