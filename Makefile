@@ -66,10 +66,10 @@ _build_post:
 	@echo " > Go Binary Generated "
 	@echo " > --------------------------------------------"
 
-_build:
+build:
 	@-$(MAKE) --no-print-directory _print _go_clean_bin _go_ensure _go_test _go_build_mac _move_bin _build_post
 
-_build_linux:
+build_linux:
 	@-$(MAKE) --no-print-directory _print _go_clean_bin _go_ensure _go_test _go_build _move_bin _build_post
 
 run:
